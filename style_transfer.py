@@ -9,37 +9,51 @@ from io import StringIO
 
 model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
 
-def load_image(img_path):
-    img = tf.io.read_file(img_path)
-    img = tf.image.decode_image(img, channels=3)
+def load_image(img_bytes):
+    # img = tf.io.read_file(img_path)
+    img = tf.image.decode_image(img_bytes, channels=3)
     img = tf.image.convert_image_dtype(img, tf.float32)
-    img = img[tf.newaxis, :]
+    img = img[tf.newaxis, :]    # Add batch dimension -> [1, height, width, channels]
     return img
 
-content_image = load_image('image/park.jpeg')
-style_image = load_image('image/monet.jpeg')
+# Streamlit UI
+st.title('🎨 Neural Style Transfer Web App')
+st.write('Upload a photo and select a style to apply neural style transfer.')
+st.write('🚀 Tech Stack: Streamlit, TensorFlow')
 
-content_image.shape
+uploaded_file = st.file_uploader("Choose a content image")
+style_option = st.selectbox("Choose a style", ["Van Gogh- Sunflowers", "Van Gogh- The Starry Night", "Salvador Dali", "Claude Monet", "Andy Warhol"])
 
-stylized_image = model(tf.constant(content_image), tf.constant(style_image))[0]
+style_images= {
+    "Van Gogh- Sunflowers": "image/vangogh.jpeg",
+    "Van Gogh- The Starry Night": "image/starrynight.jfif",
+    "Salvador Dali": "image/dali.jpeg",
+    "Claude Monet": "image/monet.jpeg",
+    "Andy Warhol": "image/andy.png"
+}
 
-cv2.imwrite('generated.jpg',cv2.cvtColor(np.squeeze(stylized_image)*255, cv2.COLOR_BGR2RGB) )
-
-
-uploaded_file = st.file_uploader("Choose a file")
 if uploaded_file is not None:
-    # To read file as bytes:
-    bytes_data = uploaded_file.getvalue()
-    st.write(bytes_data)
+    
+    content_image = load_image(uploaded_file.read())
+    style_image_path = style_images[style_option]
+    # Read the file from style_image_path and returns as a string type
+    style_image = load_image(tf.io.read_file(style_image_path))
+  
+    # st.image function expects a Numpy array
+    # [0] indicates the batch dimention -> line 16
+    stylized_image = model(tf.constant(content_image), tf.constant(style_image))[0]
 
-    # To convert to a string based IO:
-    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-    st.write(stringio)
+    st.image(np.squeeze(stylized_image), caption='Stylized Image', use_column_width=True)
 
-    # To read file as string:
-    string_data = stringio.read()
-    st.write(string_data)
+    # Convert the tensor to a Numpy array
+    stylized_image_np = stylized_image.numpy()
 
-    # Can be used wherever a "file-like" object is accepted:
-    dataframe = pd.read_csv(uploaded_file)
-    #st.write(dataframe)
+    # Convert the image to the correct format for OpenCV
+    stylized_image_cv = cv2.cvtColor(np.squeeze(stylized_image_np) * 255, cv2.COLOR_RGB2BGR)
+    
+    st.download_button(
+        label="Download Stylized Image",
+        data=cv2.imencode('.jpg', stylized_image_cv)[1].tobytes(),  # Encode the image into jpg format
+        file_name='stylized_image.jpg'
+    )
+    
