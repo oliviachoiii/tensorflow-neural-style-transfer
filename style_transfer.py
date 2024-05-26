@@ -15,7 +15,7 @@ def load_image(img_bytes):
     img = tf.image.convert_image_dtype(img, tf.float32)
     img = img[tf.newaxis, :]    # Add batch dimension -> [1, height, width, channels]
     return img
-# test
+
 # Streamlit UI
 st.title('🎨 Neural Style Transfer Web App')
 st.write('Upload a photo and select a style to apply neural style transfer.')
