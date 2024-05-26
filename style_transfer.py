@@ -10,7 +10,6 @@ from io import StringIO
 model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
 
 def load_image(img_bytes):
-    # img = tf.io.read_file(img_path)
     img = tf.image.decode_image(img_bytes, channels=3)
     img = tf.image.convert_image_dtype(img, tf.float32)
     img = img[tf.newaxis, :]    # Add batch dimension -> [1, height, width, channels]
@@ -22,11 +21,13 @@ st.write('Upload a photo and select a style to apply neural style transfer.')
 st.write('🚀 Tech Stack: Streamlit, TensorFlow')
 
 uploaded_file = st.file_uploader("Choose a content image")
-style_option = st.selectbox("Choose a style", ["Van Gogh- Sunflowers", "Van Gogh- The Starry Night", "Salvador Dali", "Claude Monet", "Andy Warhol"])
+style_option = st.selectbox("Choose a style", ["Van Gogh- Sunflowers", "Van Gogh- The Starry Night", "Frida Kahlo", "Gustav Klimt", "Salvador Dali", "Claude Monet", "Andy Warhol"])
 
 style_images= {
     "Van Gogh- Sunflowers": "image/vangogh.jpeg",
     "Van Gogh- The Starry Night": "image/starrynight.jfif",
+    "Frida Kahlo": "image/frida.jpg",
+    "Gustav Klimt": "image/klimt.jpg",
     "Salvador Dali": "image/dali.jpeg",
     "Claude Monet": "image/monet.jpeg",
     "Andy Warhol": "image/andy.png"
