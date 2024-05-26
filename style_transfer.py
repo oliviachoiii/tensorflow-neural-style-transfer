@@ -7,6 +7,7 @@ import streamlit as st
 import pandas as pd
 from io import StringIO
 
+# Import image stylization model
 model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
 
 def load_image(img_bytes):
