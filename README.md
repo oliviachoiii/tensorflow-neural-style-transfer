@@ -10,12 +10,12 @@ This project demonstrates how to use TensorFlow to implement neural style transf
 
 ## Prerequisites ⚙️
 ```
-import tensorflow_hub as hub
-import tensorflow as tf
-from matplotlib import pyplot as plt
-import numpy as np
-import cv2
-import streamlit as st
+pip install tensorflow-hub
+pip install tensorflow
+pip install matplotlib
+pip install numpy
+pip install opencv-pyton
+pip install streamlit
 ```
 ## How to Run 🧭
 ```
